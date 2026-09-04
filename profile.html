@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>প্রোফাইল - B Network</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background: #f0f2f5; color: #333; }
+    header { background: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .logo { font-size: 24px; font-weight: bold; color: #1877f2; text-decoration: none; }
+    .container { max-width: 680px; margin: 20px auto; padding: 0 10px; }
+    .profile-header { background: #fff; padding: 25px; border-radius: 8px; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    .profile-avatar { width: 80px; height: 80px; background: #1877f2; color: #fff; font-size: 36px; font-weight: bold; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto; }
+    .profile-name { font-size: 24px; margin: 0 0 5px 0; }
+    .profile-bio { color: #65676b; font-size: 14px; }
+    .post-card { background: #fff; padding: 15px 20px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .post-title { font-size: 18px; margin: 0 0 8px 0; }
+    .post-title a { color: #050505; text-decoration: none; }
+    .post-title a:hover { color: #1877f2; }
+    .post-date { font-size: 12px; color: #65676b; margin-bottom: 8px; }
+    .post-summary { font-size: 14px; color: #555; }
+    .back-link { display: inline-block; margin-bottom: 15px; color: #1877f2; text-decoration: none; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo">B Network</a>
+  </header>
+
+  <div class="container">
+    <a href="index.html" class="back-link">&larr; ফিডে ফিরে যান</a>
+    <div id="profile-area">প্রোফাইল লোড হচ্ছে...</div>
+    <h3 style="margin-top: 30px;">এই ব্যবহারকারীর পোস্টসমূহ</h3>
+    <div id="user-posts">লোড হচ্ছে...</div>
+  </div>
+
+  <script>
+    const repoUser = "mrsohagmia32-cell";
+    const repoName = "b9";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('user') || "ব্যবহারকারী";
+
+    document.getElementById('profile-area').innerHTML = `
+      <div class="profile-header">
+        <div class="profile-avatar">${username.charAt(0).toUpperCase()}</div>
+        <h1 class="profile-name">${username}</h1>
+        <div class="profile-bio">B Network এর রেজিস্টার্ড মেম্বার</div>
+      </div>
+    `;
+
+    function parseMarkdown(text) {
+      let metadata = {};
+      let body = text;
+      const match = text.match(/^---[\s\S]*?---/);
+      if (match) {
+        const header = match[0];
+        body = text.replace(header, '').trim();
+        header.split('\n').forEach(line => {
+          const parts = line.split(':');
+          if (parts.length >= 2) {
+            const key = parts[0].trim();
+            const value = parts.slice(1).join(':').replace(/['"]/g, '').trim();
+            metadata[key] = value;
+          }
+        });
+      }
+      return { metadata, body };
+    }
+
+    async function loadUserPosts() {
+      const postsContainer = document.getElementById('user-posts');
+      try {
+        const res = await fetch(`https://api.github.com/repos/${repoUser}/${repoName}/contents/posts?t=${new Date().getTime()}`);
+        if (!res.ok) { postsContainer.innerHTML = "<p>কোনো পোস্ট পাওয়া যায়নি!</p>"; return; }
+        
+        const files = await res.json();
+        files.reverse();
+        postsContainer.innerHTML = "";
+        let found = 0;
+
+        for (const file of files) {
+          if (file.name.endsWith(".md")) {
+            const fileRes = await fetch(file.download_url + `?t=${new Date().getTime()}`);
+            const text = await fileRes.text();
+            const { metadata, body } = parseMarkdown(text);
+
+            const author = metadata.author || "অজ্ঞাত";
+            if (author.toLowerCase() === username.toLowerCase()) {
+              found++;
+              const title = metadata.title || file.name.replace(/\.md/g, '');
+              const date = metadata.date ? new Date(metadata.date).toLocaleDateString('bn-BD') : '';
+              const summary = metadata.summary || body.substring(0, 100) + "...";
+              const postUrl = `index.html?post=${file.name}`;
+
+              postsContainer.innerHTML += `
+                <div class="post-card">
+                  <h3 class="post-title"><a href="${postUrl}">${title}</a></h3>
+                  <div class="post-date">${date}</div>
+                  <div class="post-summary">${summary}</div>
+                </div>
+              `;
+            }
+          }
+        }
+
+        if (found === 0) {
+          postsContainer.innerHTML = "<p style='color:#65676b;'>এই ব্যবহারকারীর কোনো পোস্ট নেই।</p>";
+        }
+      } catch (e) {
+        postsContainer.innerHTML = "<p>পোস্ট লোড করতে সমস্যা হয়েছে।</p>";
+      }
+    }
+
+    loadUserPosts();
+  </script>
+</body>
+</html>
