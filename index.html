@@ -3,158 +3,265 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>B Network</title>
+  <title>B Network - নিউজ ফিড</title>
   <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background: #f0f2f5; color: #333; }
-    header { background: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+    body { font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 0; color: #050505; }
+    
+    /* ফেসবুক স্টাইল হেডার */
+    header { background: #ffffff; height: 56px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
     .logo { font-size: 24px; font-weight: bold; color: #1877f2; text-decoration: none; }
-    .admin-link { background: #e4e6eb; color: #333; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; font-size: 14px; }
-    .container { max-width: 680px; margin: 20px auto; padding: 0 10px; }
-    .post-card { background: #fff; padding: 15px 20px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-    .post-header { display: flex; align-items: center; margin-bottom: 10px; }
-    .avatar { width: 40px; height: 40px; border-radius: 50%; background: #1877f2; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; margin-right: 10px; }
-    .author-name { font-weight: bold; color: #050505; text-decoration: none; }
-    .author-name:hover { text-decoration: underline; }
-    .post-date { font-size: 12px; color: #65676b; }
-    .post-title { font-size: 20px; margin: 5px 0 10px 0; }
-    .post-title a { color: #050505; text-decoration: none; }
-    .post-body { line-height: 1.6; color: #050505; margin-bottom: 15px; white-space: pre-wrap; }
-    .btn { display: inline-block; background: #1877f2; color: #fff; padding: 8px 14px; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600; }
-    .back-btn { display: inline-block; margin-bottom: 15px; color: #1877f2; text-decoration: none; font-weight: bold; }
+    
+    .container { max-width: 600px; margin: 20px auto; padding: 0 10px; }
+
+    /* পোস্ট ক্রিয়েট বক্স */
+    .create-post { background: #ffffff; border-radius: 8px; padding: 12px 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); margin-bottom: 16px; }
+    .create-post-top { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e4e6eb; padding-bottom: 10px; margin-bottom: 10px; }
+    .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #1877f2; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
+    .create-post-top input { width: 100%; border: none; background: #f0f2f5; padding: 10px 15px; border-radius: 20px; font-size: 15px; outline: none; }
+    
+    .create-post-bottom { display: flex; justify-content: space-around; }
+    .post-option-btn { background: none; border: none; font-weight: 600; color: #65676b; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 6px; width: 100%; justify-content: center; }
+    .post-option-btn:hover { background: #f0f2f5; }
+
+    /* পোস্ট কার্ড */
+    .post-card { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); margin-bottom: 16px; padding: 12px 16px; }
+    .post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .post-author-info { display: flex; align-items: center; gap: 10px; }
+    .post-author-name { font-weight: bold; font-size: 15px; color: #050505; }
+    .post-time { font-size: 12px; color: #65676b; }
+    
+    .post-text { font-size: 15px; line-height: 1.5; margin-bottom: 12px; word-break: break-word; }
+    .post-image { width: 100%; border-radius: 6px; max-height: 400px; object-fit: cover; margin-bottom: 12px; display: none; }
+
+    /* লাইক ও কমেন্ট কাউন্টবার */
+    .post-stats { display: flex; justify-content: space-between; font-size: 13px; color: #65676b; padding-bottom: 8px; border-bottom: 1px solid #e4e6eb; margin-bottom: 4px; }
+    
+    /* অ্যাকশন বাটনবার (লাইক, কমেন্ট, শেয়ার) */
+    .post-actions { display: flex; justify-content: space-between; border-bottom: 1px solid #e4e6eb; padding-bottom: 4px; margin-bottom: 8px; }
+    .action-btn { background: none; border: none; font-weight: 600; color: #65676b; font-size: 14px; cursor: pointer; padding: 8px 0; width: 32%; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 4px; }
+    .action-btn:hover { background: #f0f2f5; }
+    .action-btn.active { color: #1877f2; }
+
+    /* কমেন্ট সেকশন */
+    .comment-section { margin-top: 8px; }
+    .comment-box-input { display: flex; gap: 8px; margin-bottom: 10px; }
+    .comment-box-input input { flex: 1; background: #f0f2f5; border: none; padding: 8px 12px; border-radius: 20px; outline: none; font-size: 14px; }
+    .comment-submit-btn { background: #1877f2; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px; }
+    
+    .single-comment { background: #f0f2f5; padding: 8px 12px; border-radius: 12px; margin-bottom: 6px; font-size: 13px; }
+    .comment-author { font-weight: bold; margin-right: 6px; }
+
+    /* পোস্ট পপআপ বা মোডাল স্টাইল */
+    #postModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-content { background: #fff; width: 90%; max-width: 500px; border-radius: 8px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 18px; border-bottom: 1px solid #e4e6eb; padding-bottom: 10px; margin-bottom: 12px; }
+    .close-modal { background: none; border: none; font-size: 20px; cursor: pointer; color: #65676b; }
+    .modal-content textarea { width: 100%; height: 100px; border: none; outline: none; resize: none; font-size: 16px; box-sizing: border-box; }
+    .modal-content input { width: 100%; padding: 10px; border: 1px solid #ccd0d5; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; outline: none; }
+    .modal-post-btn { background: #1877f2; color: #fff; border: none; width: 100%; padding: 10px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 15px; }
   </style>
 </head>
 <body>
 
   <header>
-    <a href="index.html" class="logo">B Network</a>
-    <a href="admin/" class="admin-link">পোস্ট ম্যানেজার / এডমিন প্যানেল</a>
+    <a href="#" class="logo">B Network</a>
   </header>
 
-  <div class="container" id="app-content">লোডিং হচ্ছে...</div>
+  <div class="container">
+    
+    <!-- ফেসবুক স্ট্যাটাস বক্স -->
+    <div class="create-post">
+      <div class="create-post-top">
+        <div class="user-avatar" id="myAvatar">স</div>
+        <input type="text" placeholder="সোহাগ, আপনার মনে কি আছে?" readonly onclick="openPostModal()">
+      </div>
+      <div class="create-post-bottom">
+        <button class="post-option-btn" onclick="openPostModal()">🔴 লাইভ ভিডিও</button>
+        <button class="post-option-btn" onclick="openPostModal()">🖼️ ছবি/ভিডিও</button>
+        <button class="post-option-btn" onclick="openPostModal()">😊 অনুভূতি/কার্যকলাপ</button>
+      </div>
+    </div>
+
+    <!-- নিউজ ফিড কনটেইনার -->
+    <div id="newsFeed"></div>
+
+  </div>
+
+  <!-- পোস্ট লেখার পপআপ বক্স -->
+  <div id="postModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>পোস্ট তৈরি করুন</span>
+        <button class="close-modal" onclick="closePostModal()">&times;</button>
+      </div>
+      <input type="text" id="posterName" placeholder="আপনার নাম..." value="সোহাগ মিয়া">
+      <textarea id="posterText" placeholder="কি নিয়ে ভাবছেন, সোহাগ?"></textarea>
+      <input type="text" id="posterImage" placeholder="ছবির লিংক দিন (ঐচ্ছিক)">
+      <button class="modal-post-btn" onclick="addNewPost()">পোস্ট করুন</button>
+    </div>
+  </div>
 
   <script>
-    const repoUser = "mrsohagmia32-cell";
-    const repoName = "b9";
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const singlePostFile = urlParams.get('post');
-    const appContent = document.getElementById('app-content');
-
-    if (singlePostFile) {
-      loadSinglePost(singlePostFile);
-    } else {
-      loadAllPosts();
-    }
-
-    function parseMarkdown(text) {
-      let metadata = {};
-      let body = text;
-      const match = text.match(/^---[\s\S]*?---/);
-      if (match) {
-        const header = match[0];
-        body = text.replace(header, '').trim();
-        header.split('\n').forEach(line => {
-          const parts = line.split(':');
-          if (parts.length >= 2) {
-            const key = parts[0].trim();
-            const value = parts.slice(1).join(':').replace(/['"]/g, '').trim();
-            metadata[key] = value;
-          }
-        });
+    // ডিফল্ট পোস্ট ডেটা
+    let posts = JSON.parse(localStorage.getItem('fb_clone_posts')) || [
+      {
+        id: 1,
+        author: "সোহাগ মিয়া",
+        time: "এইমাত্র",
+        text: "আমাদের নতুন ফেসবুক স্টাইল সোশ্যাল নেটওয়ার্ক এখন একদম স্মুথলি কাজ করছে! এখানে লাইক, কমেন্ট ও শেয়ার বাটনগুলো পুরোপুরি সক্রিয়।",
+        image: "",
+        likes: 12,
+        isLiked: false,
+        comments: [
+          { author: "রহিম আহমেদ", text: "দারুণ হয়েছে ভাই!" },
+          { author: "করিম উদ্দিন", text: "খুব সুন্দর সিস্টেম।" }
+        ]
       }
-      return { metadata, body };
+    ];
+
+    function saveAndRender() {
+      localStorage.setItem('fb_clone_posts', JSON.stringify(posts));
+      renderPosts();
     }
 
-    async function loadAllPosts() {
-      try {
-        const res = await fetch(`https://api.github.com/repos/${repoUser}/${repoName}/contents/posts?t=${new Date().getTime()}`);
-        if (!res.ok) { appContent.innerHTML = "<p style='text-align:center;'>কোনো পোস্ট পাওয়া যায়নি!</p>"; return; }
-        
-        const files = await res.json();
-        files.reverse();
-        appContent.innerHTML = "";
+    function openPostModal() {
+      document.getElementById('postModal').style.display = 'flex';
+    }
 
-        for (const file of files) {
-          if (file.name.endsWith(".md")) {
-            const fileRes = await fetch(file.download_url + `?t=${new Date().getTime()}`);
-            const text = await fileRes.text();
-            const { metadata, body } = parseMarkdown(text);
+    function closePostModal() {
+      document.getElementById('postModal').style.display = 'none';
+    }
 
-            const title = metadata.title || file.name.replace(/\.md/g, '');
-            const author = metadata.author || "অজ্ঞাত";
-            const date = metadata.date ? new Date(metadata.date).toLocaleDateString('bn-BD') : '';
-            const summary = metadata.summary || body.substring(0, 140) + "...";
-            const postUrl = `index.html?post=${file.name}`;
+    function addNewPost() {
+      const name = document.getElementById('posterName').value.trim() || "ব্যবহারকারী";
+      const text = document.getElementById('posterText').value.trim();
+      const image = document.getElementById('posterImage').value.trim();
 
-            appContent.innerHTML += `
-              <div class="post-card">
-                <div class="post-header">
-                  <div class="avatar">${author.charAt(0).toUpperCase()}</div>
-                  <div>
-                    <a href="profile.html?user=${encodeURIComponent(author)}" class="author-name">${author}</a>
-                    <div class="post-date">${date}</div>
-                  </div>
-                </div>
-                <h2 class="post-title"><a href="${postUrl}">${title}</a></h2>
-                <div class="post-body">${summary}</div>
-                <a href="${postUrl}" class="btn">সম্পূর্ণ পড়ুন</a>
-              </div>
-            `;
-          }
+      if (!text && !image) {
+        return; // খালি পোস্ট আটকানোর জন্য কোনো এলার্ট ছাড়াই রিটার্ন করবে
+      }
+
+      const newPost = {
+        id: Date.now(),
+        author: name,
+        time: "এইমাত্র",
+        text: text,
+        image: image,
+        likes: 0,
+        isLiked: false,
+        comments: []
+      };
+
+      posts.unshift(newPost);
+      document.getElementById('posterText').value = "";
+      document.getElementById('posterImage').value = "";
+      closePostModal();
+      saveAndRender();
+    }
+
+    function toggleLike(postId) {
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        if (post.isLiked) {
+          post.likes -= 1;
+          post.isLiked = false;
+        } else {
+          post.likes += 1;
+          post.isLiked = true;
         }
-      } catch (e) {
-        appContent.innerHTML = "<p style='text-align:center;'>ডেটা লোড করতে সমস্যা হয়েছে।</p>";
+        saveAndRender();
       }
     }
 
-    async function loadSinglePost(fileName) {
-      try {
-        const res = await fetch(`https://raw.githubusercontent.com/${repoUser}/${repoName}/main/posts/${fileName}?t=${new Date().getTime()}`);
-        if (!res.ok) { appContent.innerHTML = "<p style='text-align:center;'>পোস্টটি পাওয়া যায়নি!</p>"; return; }
+    function toggleCommentBox(postId) {
+      const box = document.getElementById(`comment-box-${postId}`);
+      box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }
 
-        const text = await res.text();
-        const { metadata, body } = parseMarkdown(text);
+    function addComment(postId) {
+      const input = document.getElementById(`comment-input-${postId}`);
+      const text = input.value.trim();
+      if (!text) return;
 
-        const title = metadata.title || fileName.replace(/\.md/g, '');
-        const author = metadata.author || "অজ্ঞাত";
-        const date = metadata.date ? new Date(metadata.date).toLocaleDateString('bn-BD') : '';
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        post.comments.push({ author: "আপনি", text: text });
+        input.value = "";
+        saveAndRender();
+      }
+    }
 
-        document.title = title;
+    function sharePost() {
+      if (navigator.share) {
+        navigator.share({ title: 'পোস্ট শেয়ার', url: window.location.href }).catch(() => {});
+      } else {
+        alert("লিংক কপি করা হয়েছে!");
+      }
+    }
 
-        appContent.innerHTML = `
-          <a href="index.html" class="back-btn">&larr; ফিডে ফিরে যান</a>
+    function renderPosts() {
+      const feed = document.getElementById('newsFeed');
+      feed.innerHTML = "";
+
+      if (posts.length === 0) {
+        feed.innerHTML = "<p style='text-align:center; color:#65676b;'>কোনো পোস্ট নেই।</p>";
+        return;
+      }
+
+      posts.forEach(post => {
+        let commentsHTML = '';
+        post.comments.forEach(c => {
+          commentsHTML += `<div class="single-comment"><span class="comment-author">${c.author}</span>${c.text}</div>`;
+        });
+
+        feed.innerHTML += `
           <div class="post-card">
             <div class="post-header">
-              <div class="avatar">${author.charAt(0).toUpperCase()}</div>
-              <div>
-                <a href="profile.html?user=${encodeURIComponent(author)}" class="author-name">${author}</a>
-                <div class="post-date">প্রকাশের তারিখ: ${date}</div>
+              <div class="post-author-info">
+                <div class="user-avatar" style="width: 36px; height: 36px; font-size: 15px;">${post.author.charAt(0)}</div>
+                <div>
+                  <div class="post-author-name">${post.author}</div>
+                  <div class="post-time">${post.time}</div>
+                </div>
               </div>
             </div>
-            <h1 style="margin-top:0;">${title}</h1>
-            <div class="post-body" style="white-space: pre-wrap;">${body}</div>
-          </div>
-          
-          <div class="post-card">
-            <h3>কমেন্টসমূহ</h3>
-            <div id="utterances-container"></div>
+            
+            <div class="post-text">${post.text}</div>
+            ${post.image ? `<img src="${post.image}" class="post-image" style="display: block;" onerror="this.style.display='none'">` : ''}
+
+            <div class="post-stats">
+              <span>👍 ${post.likes}</span>
+              <span>${post.comments.length}টি কমেন্ট</span>
+            </div>
+
+            <div class="post-actions">
+              <button class="action-btn ${post.isLiked ? 'active' : ''}" onclick="toggleLike(${post.id})">
+                👍 লাইক
+              </button>
+              <button class="action-btn" onclick="toggleCommentBox(${post.id})">
+                💬 কমেন্ট
+              </button>
+              <button class="action-btn" onclick="sharePost()">
+                ↗️ শেয়ার
+              </button>
+            </div>
+
+            <div id="comment-box-${post.id}" class="comment-section" style="display: none;">
+              <div class="comment-box-input">
+                <input type="text" id="comment-input-${post.id}" placeholder="একটি কমেন্ট লিখুন...">
+                <button class="comment-submit-btn" onclick="addComment(${post.id})">পোস্ট</button>
+              </div>
+              <div id="comments-list-${post.id}">
+                ${commentsHTML}
+              </div>
+            </div>
           </div>
         `;
-
-        const commentDiv = document.getElementById('utterances-container');
-        const script = document.createElement('script');
-        script.src = "https://utteranc.es/client.js";
-        script.setAttribute("repo", `${repoUser}/${repoName}`);
-        script.setAttribute("issue-term", "pathname");
-        script.setAttribute("theme", "github-light");
-        script.setAttribute("crossorigin", "anonymous");
-        script.async = true;
-        commentDiv.appendChild(script);
-
-      } catch (e) {
-        appContent.innerHTML = "<p style='text-align:center;'>পোস্ট লোড করতে সমস্যা হয়েছে।</p>";
-      }
+      });
     }
+
+    // প্রথমবার রেন্ডার করা
+    renderPosts();
   </script>
 </body>
 </html>
